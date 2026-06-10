@@ -43,5 +43,17 @@ fig = px.bar(
 )
 
 st.plotly_chart(fig)
+brand_summary = (
+    df.groupby("bike_brand")
+    .agg(
+        Bikes=("bike_brand", "count"),
+        Profit=("total_profit", "sum")
+    )
+    .reset_index()
+)
+
+st.subheader("Brand Performance")
+
+st.dataframe(brand_summary)
 
 st.dataframe(df)
