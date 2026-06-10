@@ -4,6 +4,24 @@ import pandas as pd
 import plotly.express as px
 
 df = pd.read_csv("Bike Business Record - Sheet1 (1).csv")
+total_bikes = len(df)
+
+sold_bikes = len(df[df["Status"] == "Sold"])
+
+inventory = len(df[df["Status"] != "Sold"])
+
+total_profit = df["total_profit"].fillna(0).sum()
+
+money_in_stock = df[df["Status"] != "Sold"]["total_cost"].sum()
+
+col1, col2, col3, col4, col5 = st.columns(5)
+
+col1.metric("Total Bikes", total_bikes)
+col2.metric("Sold", sold_bikes)
+col3.metric("Inventory", inventory)
+col4.metric("Profit", f"₹{total_profit:,.0f}")
+col5.metric("Stock Value", f"₹{money_in_stock:,.0f}")
+
 
 df["total_profit"] = pd.to_numeric(df["total_profit"], errors="coerce")
 
