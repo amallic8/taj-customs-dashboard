@@ -50,6 +50,7 @@ brand_summary = (
         Profit=("total_profit", "sum")
     )
     .reset_index()
+    .sort_values("Profit", ascending=False)
 )
 
 st.subheader("Brand Performance")
