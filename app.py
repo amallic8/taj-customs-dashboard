@@ -14,7 +14,7 @@ total_profit = df["total_profit"].fillna(0).sum()
 
 money_in_stock = df[df["Status"] != "Sold"]["total_cost"].sum()
 
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5 = st.columns([1,1,1,2,2])
 
 col1.metric("Total Bikes", total_bikes)
 col2.metric("Sold", sold_bikes)
@@ -27,7 +27,7 @@ df["total_profit"] = pd.to_numeric(df["total_profit"], errors="coerce")
 
 st.title("Bike Business Dashboard")
 
-st.metric("Total Profit", f"₹{df['total_profit'].sum():,.0f}")
+#st.metric("Total Profit", f"₹{df['total_profit'].sum():,.0f}")
 
 brand_profit = (
     df.groupby("bike_brand")["total_profit"]
