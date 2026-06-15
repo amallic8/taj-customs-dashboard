@@ -131,7 +131,12 @@ st.dataframe(
 # OLDEST & NEWEST INVENTORY
 # =========================
 
-inventory_df = df[df["Status"] != "Sold"].copy()
+inventory_df = df[df["Status"] == "Available"].copy()
+st.write(
+    inventory_df[
+        ["bike_brand", "model", "Status", "date_purchased"]
+    ].sort_values("date_purchased")
+)
 
 inventory_df["date_purchased"] = pd.to_datetime(
     inventory_df["date_purchased"],
