@@ -126,7 +126,68 @@ st.dataframe(
 # =========================
 # RAW DATA
 # =========================
+# =========================
+# OLDEST & NEWEST INVENTORY
+# =========================
 
+inventory_df = df[df["Status"] != "Sold"].copy()
+
+inventory_df["date_purchased"] = pd.to_datetime(
+    inventory_df["date_purchased"],
+    errors="coerce"
+)
+
+inventory_df = inventory_df.dropna(subset=["date_purchased"])
+
+if not inventory_df.empty:
+
+    oldest_bike = inventory_df.loc[
+        inventory_df["date_purchased"].idxmin()
+    ]
+
+    newest_bike = inventory_df.loc[
+        inventory_df["date_purchased"].idxmax()
+    ]
+
+    today = pd.Timestamp.today()
+
+    oldest_days = (
+        today - oldest_bike["date_purchased"]
+    ).days
+
+    newest_days = (
+        today - newest_bike["date_purchased"]
+    ).days
+
+    st.subheader("⏳ Inventory Ageing")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.warning(
+            f"""
+**🕰️ Oldest Bike in Stock**
+
+**{oldest_bike['bike_brand']} {oldest_bike['model']}**
+
+Purchased: {oldest_bike['date_purchased'].date()}
+
+Days in Stock: {oldest_days}
+"""
+        )
+
+    with col2:
+        st.success(
+            f"""
+**🆕 Newest Bike in Stock**
+
+**{newest_bike['bike_brand']} {newest_bike['model']}**
+
+Purchased: {newest_bike['date_purchased'].date()}
+
+Days in Stock: {newest_days}
+"""
+        )
 st.subheader("📋 Complete Inventory")
 
 st.dataframe(
