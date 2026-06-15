@@ -43,7 +43,7 @@ brand_profit = (
     .reset_index()
     .sort_values("total_profit", ascending=False)
 )
-
+st.write(df["Status"].unique())
 # =========================
 # MONTHLY SALES TREND
 # =========================
