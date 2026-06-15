@@ -9,6 +9,7 @@ df = pd.read_csv("Bike Business Record - Sheet1 (1).csv")
 df["total_profit"] = pd.to_numeric(df["total_profit"], errors="coerce").fillna(0)
 df["total_cost"] = pd.to_numeric(df["total_cost"], errors="coerce").fillna(0)
 df["date_sold"] = pd.to_datetime(df["date_sold"], errors="coerce")
+df["date_sold"] = pd.to_datetime(df["date_sold"],dayfirst=True,errors="coerce")
 
 # =========================
 # KPI CARDS
@@ -134,6 +135,7 @@ inventory_df = df[df["Status"] != "Sold"].copy()
 
 inventory_df["date_purchased"] = pd.to_datetime(
     inventory_df["date_purchased"],
+    dayfirst=True,
     errors="coerce"
 )
 
