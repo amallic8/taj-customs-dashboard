@@ -2,14 +2,24 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# Load Data
+# =========================
+# LOAD DATA
+# =========================
+
 df = pd.read_csv("Bike Business Record - Sheet1 (1).csv")
 
-# Clean Data
+# =========================
+# CLEAN DATA
+# =========================
+
 df["total_profit"] = pd.to_numeric(df["total_profit"], errors="coerce").fillna(0)
 df["total_cost"] = pd.to_numeric(df["total_cost"], errors="coerce").fillna(0)
-df["date_sold"] = pd.to_datetime(df["date_sold"], errors="coerce")
-df["date_sold"] = pd.to_datetime(df["date_sold"],dayfirst=True,errors="coerce")
+
+df["date_sold"] = pd.to_datetime(
+    df["date_sold"],
+    dayfirst=True,
+    errors="coerce"
+)
 
 # =========================
 # KPI CARDS
@@ -32,10 +42,14 @@ col5.metric("Stock Value", f"₹{money_in_stock:,.0f}")
 st.title("🏍️ Bike Business Dashboard")
 
 # =========================
-# PROFIT BY BRAND
+# SOLD BIKES
 # =========================
 
-sold_df = df[df["Status"] == "Sold"]
+sold_df = df[df["Status"] == "Sold"].copy()
+
+# =========================
+# PROFIT BY BRAND
+# =========================
 
 brand_profit = (
     sold_df.groupby("bike_brand")["total_profit"]
@@ -43,8 +57,9 @@ brand_profit = (
     .reset_index()
     .sort_values("total_profit", ascending=False)
 )
+
 # =========================
-# MONTHLY SALES TREND
+# MONTHLY BIKES SOLD
 # =========================
 
 monthly_sales = (
@@ -54,31 +69,42 @@ monthly_sales = (
     .reset_index(name="Bikes Sold")
 )
 
-monthly_sales["date_sold"] = monthly_sales["date_sold"].astype(str)
+monthly_sales["Month"] = monthly_sales["date_sold"].dt.strftime("%b %Y")
 
 # =========================
-# SIDE-BY-SIDE CHARTS
+# SIDE BY SIDE CHARTS
 # =========================
 
 col_left, col_right = st.columns(2)
 
 with col_left:
+
     fig1 = px.bar(
         brand_profit,
         x="bike_brand",
         y="total_profit",
         title="Profit by Brand"
     )
+
     st.plotly_chart(fig1, use_container_width=True)
 
 with col_right:
-    fig2 = px.line(
+
+    fig2 = px.bar(
         monthly_sales,
-        x="date_sold",
+        x="Month",
         y="Bikes Sold",
-        markers=True,
-        title="Monthly Sales Trend"
+        text="Bikes Sold",
+        title="Monthly Bikes Sold"
     )
+
+    fig2.update_traces(textposition="outside")
+
+    fig2.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Number of Bikes Sold"
+    )
+
     st.plotly_chart(fig2, use_container_width=True)
 
 # =========================
@@ -124,10 +150,7 @@ st.dataframe(
 )
 
 # =========================
-# RAW DATA
-# =========================
-# =========================
-# OLDEST & NEWEST INVENTORY
+# INVENTORY AGEING
 # =========================
 
 inventory_df = df[df["Status"] == "Available"].copy()
@@ -152,13 +175,8 @@ if not inventory_df.empty:
 
     today = pd.Timestamp.today()
 
-    oldest_days = (
-        today - oldest_bike["date_purchased"]
-    ).days
-
-    newest_days = (
-        today - newest_bike["date_purchased"]
-    ).days
+    oldest_days = (today - oldest_bike["date_purchased"]).days
+    newest_days = (today - newest_bike["date_purchased"]).days
 
     st.subheader("⏳ Inventory Ageing")
 
@@ -189,6 +207,11 @@ Purchased: {newest_bike['date_purchased'].date()}
 Days in Stock: {newest_days}
 """
         )
+
+# =========================
+# COMPLETE INVENTORY
+# =========================
+
 st.subheader("📋 Complete Inventory")
 
 st.dataframe(
